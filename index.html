@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>M. Erdem Tusun</title>
+</head>
+<body>
+    <div class="header_class" id="header_id">
+            <h1> Mustafa Erdem Tusun Portfolio </h1>
+    </div>
+<div class="content">
+    <span>
+        <img src="images/met_avatar.jpeg" alt="azirbird" class="azir" width="100%" style="border-radius: 50%;">
+    </span>
+    <p class="intro"> Hi, I am Mustafa Erdem and welcome to my website which I use as a portfolio.</p>
+    <p class="intro">
+    I am an electrical electronics engineering student at Marmara University who is working to improve his skills on embedded systems and ARM based microcontrollers.
+    </p>
+    <div class="intro">I have done my internships at embedded systems.</div>
+    <div class="intro"> </div>
+    <p class="intro"></p>
+    <a href="Mustafa_Erdem_Tusun_Resume.pdf" download> <button>Download My Resume</button></a>
+    <p class="about" style="color:#1f1c1b; font-size: 1em;">Contact: <a href="mailto: metusun@gmail.com" class="mail"> metusun@gmail.com </a></p>
+    <div><a href="https://www.linkedin.com/in/mustafa-erdem-tusun/">LinkedIn</a></div>
+
+    <div class="project">
+    <h1 class="about">LCD-Desk-Clock-Temperature-with-ESP8266 </h1>
+    <p class="about">the source code: <a href="https://github.com/mustafaerdtusun/LCD-Desk-Clock-Temperature-with-ESP8266" class="srclink"> here </a></p>
+    <h3>About</h3>
+    <p>This was my final project for my Microprocessors course.</p>
+    <p>[projeyi açıkla]</p>
+    <p>Here is the main code:</p>
+    <div class="box">
+        <pre>
+#include <NTPClient.h>
+#include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
+
+#include <LiquidCrystal_I2C.h>
+#include "DHT.h"    
+#include <Arduino.h>
+
+#define DHTPIN 12    // GPIO2 NodeMCU kart üzerinde D4 Pini !
+#define DHTTYPE DHT11   // Kullandığımız sensörün tipi DHT 11
+#define BLYNK_PRINT Serial 
+
+
+
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+DHT dht(DHTPIN, DHTTYPE);
+
+
+const char *ssid     = "wifissid";
+const char *password = "wifipassword";
+
+const long utcOffsetInSeconds = 3600;
+
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+
+void setup(){
+
+
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
+
+  dht.begin();
+
+  lcd.init();
+  lcd.backlight();
+  
+
+  Serial.begin(115200);
+
+  WiFi.begin(ssid, password);
+
+  while ( WiFi.status() != WL_CONNECTED ) {
+    delay ( 500 );
+    Serial.print ( "." );
+  }
+
+  timeClient.begin();
+}
+
+void loop() {
+  int h = dht.readHumidity();
+  int t = dht.readTemperature();  
+  Serial.print("Sicaklik:");
+  Serial.println(t);
+  Serial.print("Nem: ");
+  Serial.println(h);
+
+  
+  timeClient.update();
+
+  Serial.print(daysOfTheWeek[timeClient.getDay()]);
+  Serial.print(", ");
+  Serial.print(timeClient.getHours()+2);
+  Serial.print(":");
+  Serial.print(timeClient.getMinutes());
+  Serial.print(":");
+  Serial.println(timeClient.getSeconds());
+  //Serial.println(timeClient.getFormattedTime());
+
+lcd.setCursor(0,0);
+
+if(timeClient.getHours()+2<10){
+  lcd.print("0");
+}
+lcd.print(timeClient.getHours()+2);
+lcd.print(":");
+if(timeClient.getMinutes()<10){
+  lcd.print("0");
+}
+lcd.print(timeClient.getMinutes());
+lcd.print(":");
+if(timeClient.getSeconds()<10){
+  lcd.print("0");
+}
+lcd.print(timeClient.getSeconds());
+lcd.print(" ");
+lcd.print(daysOfTheWeek[timeClient.getDay()]);
+
+
+  
+  lcd.setCursor(0,1);
+  lcd.print(t);
+  lcd.print("'C ");
+  lcd.setCursor(5,1);
+  lcd.print(h);
+  lcd.print("%");
+  
+
+  delay(100);
+}
+        </pre>
+</div>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
